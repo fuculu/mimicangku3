@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.springframework.org/schema/jdbc">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/js/jquery-1.8.0.js"></script>
+
+    <link rel="stylesheet" href="/js/easyui1.5/themes/icon.css">
+    <link rel="stylesheet" href="/js/easyui1.5/themes/default/easyui.css">
+    <script type="text/javascript" src="/js/easyui1.5/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/js/easyui1.5/locale/easyui-lang-zh_CN.js"></script>
+</head>
+<body>
+<!-- 条件查form开始 -->
+<form id="queryFormId" method="post">
+    评论内容:<input class="easyui-textbox" name="comments" prompt="评论内容" data-options="iconCls:'icon-search'" style="width:150px"><br>
+    日期:
+    <input type="date" name="startDate">----<input type="date" name="endDate"><br/>
+    <!--<input class="form-control " name="startDate" id="startDate" onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'endDate\')}'})" />至-->
+    <!--<input  class="form-control " name="endDate" id="endDate" onfocus="WdatePicker({minDate:'#F{$dp.$D(\'startDate\')}'})" /><br/>-->
+    <button type="button" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="find()">搜索</button>
+    <button type="button" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="reset()">重置</button>
+</form>
+<!-- 条件查form结束 -->
+<input name="goodsid" th:value="${aa}" id="aa">
+<table id="dg"></table>
+</body>
+<script type="text/javascript">
+    $(function () {
+        show();
+        $('#dg').datagrid('reload');
+    });
+
+    /*查询*/
+    function show() {
+        var id = $("#aa").val();
+        alert(id);
+        $('#dg').datagrid({
+            url: '../demo/tohx.do?id='+id,
+            fitColumns: true,
+            columns: [
+                [
+
+                    {field: 'xx', title: '', checkbox: true, width: $(this).width() * 0.03},
+                    {field: 'pid', title: '主键id', width: $(this).width() * 0.09},
+                    {field: 'comments', title: '评论内容', width: $(this).width() * 0.09},
+                    {field: 'commentsName', title: '评论人', width: $(this).width() * 0.09},
+                    {field: 'commentsLevel', title: '成绩',formatter:function(value, row, index) {
+                        var str = "";
+                        if (row.commentsLevel==1) {
+                            str+="优";
+                        }
+                        if (row.commentsLevel==2) {
+                            str+="良";
+                        }
+                        if (row.commentsLevel==3) {
+                            str+="差";
+                        }
+                        return str;
+                        },width: $(this).width() * 0.09},
+                    {field: 'commentsStars', title: '评论星数量',formatter:function(value, row, index) {
+                            var str = "";
+                            if (row.commentsStars==1) {
+                                str+="★";
+                            }
+                            if (row.commentsStars==2) {
+                                str+="★★";
+                            }
+                            if (row.commentsStars==3) {
+                                str+="★★★";
+                            }
+                            if (row.commentsStars==4) {
+                                str+="★★★★";
+                            }
+                            if (row.commentsStars==5) {
+                                str+="★★★★★";
+                            }
+                            return str;
+                        },
+                        width: $(this).width() * 0.09},
+                    {field: 'commentDate', title: '评论时间', width: $(this).width() * 0.09},
+                    {field: 'goodsid', title: '商品id', width: $(this).width() * 0.09},
+                ]
+            ],
+            pagination: true,
+            page: 3,
+
+            pageList: [1, 2, 3, 6, 8]
+        })
+        $('#dg').datagrid('getPager').pagination({        //   独自声明   datagird   数据表格的分页
+            beforePageText: '第',//页数文本框前显示的汉字
+            afterPageText: '页    共 {pages} 页',
+            displayMsg: '当前显示 {from} - {to} 条记录   共 {total} 条记录',
+            showRefresh: false
+        });
+    }
+    /**
+     * 条件查询
+     */
+    function find(){
+        $('#dg').datagrid('load', myserialize($("#queryFormId")));
+    }
+    function myserialize (obj) {
+        var o = {};
+        var a = obj.serializeArray();
+        $.each(a, function() {
+            if (o[this.name] !== undefined) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        console.log(o);
+        return o;
+    };
+
+
+</script>
+</html>

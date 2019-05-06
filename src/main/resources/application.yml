@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    name: mydb
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://127.0.0.1:3306/jk
+    username: root
+    password: root
+    driver?class?name: com.mysql.jdbc.Driver
+  redis:
+    host: 127.0.0.1
+    port: 6379
+  data:
+    mongodb:
+      host: 127.0.0.1
+      port: 27017
+      dbname: test
+mybatis:
+  mapperLocations: classpath*:mybatis/mapper?*.xml
+  typeAliasesPackage: com.jk.model
+

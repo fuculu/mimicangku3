@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/js/jquery-1.8.0.js"></script>
+
+    <link rel="stylesheet" href="/js/easyui1.5/themes/icon.css">
+    <link rel="stylesheet" href="/js/easyui1.5/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/js/uploadify/privateUpload/uploadify.css" />
+    <script type="text/javascript" src="/js/uploadify/privateUpload/jquery.uploadify.js"></script>
+    <script type="text/javascript" src="/js/easyui1.5/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/js/easyui1.5/locale/easyui-lang-zh_CN.js"></script>
+</head>
+<body>
+<div id="add1" class="easyui-dialog" title="新增商品页面" style="width:800px;height:400px;"
+     data-options="iconCls:'icon-save',resizable:true,modal:true">
+    <form id="addFormId" method="post">
+        商品名称:<input name=""><br>
+        商品图:<input  type="file"   id="file_upload" >
+        <p>
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-ok'"
+               href="javascript:$('#file_upload').uploadify('upload', '*')">开始上传所有任务</a>
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-lock'"
+               href="javascript:$('#file_upload').uploadify('stopa')">停止上传</a>
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-ok'"
+               href="javascript:$('#file_upload').uploadify('upload')">上传</a>
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-lock'"
+               href="javascript:$('#file_upload').uploadify('cancel')">取消上传</a>
+        </p>
+        <div id="filequence">
+        </div>
+        <div id="imgQuence">
+        </div>
+        <input type="hidden" id="imgId"  name="goodsImg" value="${car.imgId}" >
+        <!--<input type="hidden" id="imgId"  name="imgId" value="${car.imgId}" >-->
+        <!--<img  width='90' height='40' alt='加载中...' src='<%=path%>/demo/findImgById.do?imgId=${car.imgId}' /><br>-->
+        <input type="button" value="提交" onclick="addGoods()">
+    </form>
+</div>
+<div id="updatedl" class="easyui-dialog" title="新增评论页面" style="width:800px;height:400px;"
+     data-options="iconCls:'icon-save',resizable:true,modal:true">
+
+<form id="updateFormId" method="post">
+    <input type="text" id="hedid" name="goodsid" value="">
+    <input type="text" id="chkid" name="commentsStars" value="">
+    评论内容:<input name="comments"><br>
+    评论人：<input name="commentsName"><br>
+    评论等级:
+    <input type="radio" name="commentsLevel" value="1">优
+    <input type="radio" name="commentsLevel" value="2">良
+    <input type="radio" name="commentsLevel" value="3">差<br>
+    评论星:
+    <input type="checkbox" name="commentsStar" >
+    <input type="checkbox" name="commentsStar" >
+    <input type="checkbox" name="commentsStar" >
+    <input type="checkbox" name="commentsStar" >
+    <input type="checkbox" name="commentsStar" ><br>
+    <input type="button" value="提交" onclick="addGoods()">
+</form>
+</div>
+<table id="dg"></table>
+</body>
+<script type="text/javascript">
+    $(function () {
+        show();
+        $("#updatedl").dialog("close");
+    });
+
+    /*查询*/
+    function show() {
+        $('#dg').datagrid({
+            url: '../demo/queryGoods.do',
+            fitColumns: true,
+            columns: [
+                [
+                    {field: 'xx', title: '', checkbox: true, width: $(this).width() * 0.03},
+                    {field: 'gid', title: '商品编号',width: $(this).width() * 0.09,formatter:function(value, row, index){
+                         return "<input type='text'  value="+value+" id='idid' readonly>";
+                        }},
+                    {field: 'goodsName', title: '商品名称', formatter: function (value, row, index) {
+                            var content = "<a href='javascript:addPL()' class='easyui-linkbutton' iconCls:'icon-cancel'>"+row.goodsName+"</a>";
+                            return content;
+                        },  width: $(this).width() * 0.09},
+                    {field: 'goodsCount', title: '评论数量', width: $(this).width() * 0.09},
+                    {field: 'goodsImg', title: '商品图',formatter:function (value, row, index) {
+                        return "<img  width='90' height='40' alt='加载中...' src='<%=path%>/demo/findImgById.do?imgId=${car.imgId}' /><br>";
+                        },width: $(this).width() * 0.09},
+                    {field: 'xxx', title: '操作', formatter: function (value, row, index) {
+                            var content = "<a href='javascript:delBook(&quot;"+row.gid+"&quot;)' class='easyui-linkbutton' iconCls:'icon-cancel'>查看评论</a>";
+                            return content;
+                        }, width: $(this).width() * 0.09
+                    },
+                ]
+            ],
+            toolbar: [{
+                iconCls: 'icon-add',
+                text:"新增",
+                handler: function(){
+
+                    // var rowArr = $("#dg").datagrid("getChecked");
+                    // var proishot = "";
+                    // for (var i = 0; i < rowArr.length; i++) {
+                    //     proishot += rowArr[i].proishot + ",";
+                    // }
+                    // strid = strid.substring(0,strid.length-1);
+                    // funrm(proishot);
+                }
+            }],
+            pagination: true,
+            page: 3,
+            pageList: [1, 2, 3, 6, 8]
+        })
+        $('#dg').datagrid('getPager').pagination({        //   独自声明   datagird   数据表格的分页
+            beforePageText: '第',//页数文本框前显示的汉字
+            afterPageText: '页    共 {pages} 页',
+            displayMsg: '当前显示 {from} - {to} 条记录   共 {total} 条记录',
+            showRefresh: false
+        });
+    }
+
+    function delBook(gid) {
+        location.href="../page/tohx.do?gid="+gid;
+    }
+
+    function addPL() {
+        $("#updateFormId").form("clear");
+        $("#hedid").val($("#idid").val());
+        $("#updatedl").dialog("open");
+    }
+    /**
+     * 新增
+     */
+    function addGoods() {
+       var a = $("#chkid").val($("input[name='commentsStar']:checked").length);
+        $('#updateFormId').form('submit', {
+            url: "../demo/addGoods.do",
+            onSubmit: function () {
+            },
+            success: function (data) {
+                $("#updateFormId").form("clear");
+                $("#updatedl").dialog("close");
+                location.href="../page/tohx.do";
+            }
+        });
+    }
+</script>
+</html>
